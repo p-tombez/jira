@@ -51,12 +51,19 @@ from six.moves.urllib.parse import urlparse
 from jira.exceptions import JIRAError
 from jira.resilientsession import raise_on_error
 from jira.resilientsession import ResilientSession
+<<<<<<< HEAD
+=======
+
+>>>>>>> pr388
 # JIRA specific resources
 from jira.resources import Attachment
 from jira.resources import Board
 from jira.resources import Comment
 from jira.resources import Component
+<<<<<<< HEAD
 from jira.resources import Customer
+=======
+>>>>>>> pr388
 from jira.resources import CustomFieldOption
 from jira.resources import Dashboard
 from jira.resources import Filter
@@ -68,20 +75,33 @@ from jira.resources import IssueType
 from jira.resources import Priority
 from jira.resources import Project
 from jira.resources import RemoteLink
+<<<<<<< HEAD
 from jira.resources import RequestType
+=======
+>>>>>>> pr388
 from jira.resources import Resolution
 from jira.resources import Resource
 from jira.resources import Role
 from jira.resources import SecurityLevel
+<<<<<<< HEAD
 from jira.resources import ServiceDesk
 from jira.resources import Sprint
 from jira.resources import Status
 from jira.resources import StatusCategory
+=======
+from jira.resources import Sprint
+from jira.resources import Status
+>>>>>>> pr388
 from jira.resources import User
 from jira.resources import Version
 from jira.resources import Votes
 from jira.resources import Watchers
 from jira.resources import Worklog
+<<<<<<< HEAD
+=======
+
+from jira.service_desk import JiraServiceDesk
+>>>>>>> pr388
 
 from jira import __version__
 from jira.utils import CaseInsensitiveDict
@@ -541,6 +561,7 @@ class JIRA(object):
             if 'clauseNames' in f:
                 for name in f['clauseNames']:
                     self._fields[name] = f['id']
+        self.desk = JiraServiceDesk(self)
 
     def _create_cookie_auth(self, auth, timeout):
         self._session = ResilientSession(timeout=timeout)
@@ -589,6 +610,7 @@ class JIRA(object):
             return False
         return True
 
+<<<<<<< HEAD
     def _get_sprint_field_id(self):
         sprint_field_name = "Sprint"
         sprint_field_id = [f['schema']['customId'] for f in self.fields()
@@ -604,6 +626,9 @@ class JIRA(object):
                      params=None,
                      base=JIRA_BASE_URL,
                      ):
+=======
+    def _fetch_pages(self, item_type, items_key, request_path, startAt=0, maxResults=50, params=None, headers=CaseInsensitiveDict(), base=JIRA_BASE_URL):
+>>>>>>> pr388
         """Fetch pages.
 
         :param item_type: Type of single item. ResultList of such items will be returned.
@@ -639,9 +664,20 @@ class JIRA(object):
         if maxResults:
             page_params['maxResults'] = maxResults
 
+<<<<<<< HEAD
         resource = self._get_json(request_path, params=page_params, base=base)
         next_items_page = self._get_items_from_page(item_type, items_key,
                                                     resource)
+=======
+        try:
+            resource = self._get_json(request_path, params=page_params, headers=headers, base=base)
+            next_items_page = [item_type(self._options, self._session, raw_issue_json) for raw_issue_json in
+                               (resource[items_key] if items_key else resource)]
+        except KeyError as e:
+            # improving the error text so we know why it happened
+            raise KeyError(str(e) + " : " + json.dumps(resource))
+
+>>>>>>> pr388
         items = next_items_page
 
         if True:  # isinstance(resource, dict):
@@ -686,7 +722,7 @@ class JIRA(object):
                         next_items_page) == page_size:
                     page_params['startAt'] = page_start
                     page_params['maxResults'] = page_size
-                    resource = self._get_json(request_path, params=page_params, base=base)
+                    resource = self._get_json(request_path, params=page_params, headers=headers, base=base)
                     if resource:
                         next_items_page = self._get_items_from_page(
                             item_type, items_key, resource)
@@ -1332,6 +1368,7 @@ class JIRA(object):
                                    'error': None, 'input_fields': fields})
         return issue_list
 
+<<<<<<< HEAD
     def supports_service_desk(self):
         """Returns whether or not the JIRA instance supports service desk.
 
@@ -1451,6 +1488,25 @@ class JIRA(object):
                    issuetypeNames=None,
                    expand=None,
                    ):
+=======
+    def delete_issue(self, id):
+        """Delete Issue.
+
+        :param id: issue Id or Key or Issue object.
+        :return: Boolean. Returns True on success.
+        """
+
+        if isinstance(id, Issue):
+            id = Issue.id
+
+        url = self._options['server'] + '/rest/api/2/issue/%s' % id
+        result = self._session.delete(url)
+        if result.status_code != 204:
+            raise JIRAError(result.status_code, request=result)
+        return True
+
+    def createmeta(self, projectKeys=None, projectIds=[], issuetypeIds=None, issuetypeNames=None, expand=None):
+>>>>>>> pr388
         """Get the metadata required to create issues, optionally filtered by projects and issue types.
 
         :param projectKeys: keys of the projects to filter the results with.
@@ -1546,11 +1602,15 @@ class JIRA(object):
             "type" is 'role' (or 'group' if the JIRA server has configured
             comment visibility for groups) and 'value' is the name of the role
             (or group) to which viewing of this comment will be restricted.
+<<<<<<< HEAD
         :type visibility: Optional[Dict[str, str]]
         :param is_internal: Defines whether a comment has to be marked as 'Internal' in Jira Service Desk (Default: False)
         :type is_internal: bool
         :rtype: Comment
 
+=======
+        :param is_internal: defines whether a comment has to be marked as 'Internal' in Jira Service Desk
+>>>>>>> pr388
         """
         data = {
             'body': body,
@@ -2971,6 +3031,7 @@ class JIRA(object):
         options.update({'path': path})
         return base.format(**options)
 
+<<<<<<< HEAD
     def _get_json(self,
                   path,
                   params=None,
@@ -2988,8 +3049,11 @@ class JIRA(object):
         :rtype: Union[Dict[str, Any], List[Dict[str, str]]]
 
         """
+=======
+    def _get_json(self, path, params=None, headers=CaseInsensitiveDict(), base=JIRA_BASE_URL):
+>>>>>>> pr388
         url = self._get_url(path, base)
-        r = self._session.get(url, params=params)
+        r = self._session.get(url, params=params, headers=headers)
         try:
             r_json = json_loads(r)
         except ValueError as e:
@@ -3402,13 +3466,27 @@ class JIRA(object):
         if template_name is not None:
             possible_templates = [template_name]
 
+        possible_templates = ['JIRA Classic', 'JIRA Default Schemes', 'Basic software development']
+
+        if template_name is not None:
+            possible_templates = [template_name]
+
         # https://confluence.atlassian.com/jirakb/creating-a-project-via-rest-based-on-jira-default-schemes-744325852.html
+<<<<<<< HEAD
         templates = self.templates()
         # TODO(ssbarnea): find a better logic to pick a default fallback template
         template_key = list(templates.values())[0]['projectTemplateModuleCompleteKey']
         for template_name, template_dic in templates.items():
             if template_name in possible_templates:
                 template_key = template_dic['projectTemplateModuleCompleteKey']
+=======
+        template_key = 'com.atlassian.jira-legacy-project-templates:jira-blank-item'
+        templates = []
+        for template in _get_template_list(j):
+            templates.append(template['name'])
+            if template['name'] in possible_templates:
+                template_key = template['projectTemplateModuleCompleteKey']
+>>>>>>> pr388
                 break
 
         payload = {'name': name,
@@ -3447,6 +3525,7 @@ class JIRA(object):
                     f.name, r.status_code))
         return False
 
+<<<<<<< HEAD
     def add_user(self,
                  username,
                  email,
@@ -3458,6 +3537,10 @@ class JIRA(object):
                  ignore_existing=False,
                  application_keys=None,
                  ):
+=======
+    def add_user(self, username, email, directoryId=1, password=None,
+                 fullname=None, notify=False, active=True, application_keys=None, ignore_existing=False):
+>>>>>>> pr388
         """Create a new JIRA user.
 
         :param username: the username of the new user

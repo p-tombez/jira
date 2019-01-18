@@ -11,7 +11,11 @@ JIRA Python Library
 .. image:: https://img.shields.io/pypi/wheel/jira.svg
         :target: https://pypi.python.org/pypi/jira/
 
+<<<<<<< HEAD
 .. image:: https://img.shields.io/github/issues/pycontribs/jira.svg
+=======
+.. image:: https://img.shields.io/codeclimate/issues/github/pycontribs/jira.svg
+>>>>>>> pr388
         :target: https://github.com/pycontribs/jira/issues
 
 ------------
@@ -19,8 +23,13 @@ JIRA Python Library
 .. image:: https://readthedocs.org/projects/jira/badge/?version=master
         :target: http://jira.readthedocs.io
 
+<<<<<<< HEAD
 .. image:: https://travis-ci.com/pycontribs/jira.svg?branch=master
         :target: https://travis-ci.com/pycontribs/jira
+=======
+.. image:: https://api.travis-ci.org/pycontribs/jira.svg?branch=master
+        :target: https://travis-ci.org/pycontribs/jira
+>>>>>>> pr388
 
 .. image:: https://codecov.io/gh/pycontribs/jira/branch/develop/graph/badge.svg
         :target: https://codecov.io/gh/pycontribs/jira
